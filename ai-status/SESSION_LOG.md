@@ -50,3 +50,37 @@ pass on PowerShell 7.6.6 (Linux).
 
 **NOT RUN** (no suitable host in this environment): Windows PowerShell 5.1, standard-user on
 Windows, and a privileged bind to port 80. Exact repro commands are in `README.md`.
+
+## Session 2 — 2026-10-02 — Run the PowerShell client end to end
+
+**Focus**: Launch the server and drive the standalone PowerShell client through every
+documented form (one-shot, dot-sourced, text, bytes, offline codec, negative paths).
+
+**Findings**:
+
+1. **Port 8080 is taken on this VM** by an nginx listener (`127.0.0.1:8080`, answers
+   `301 Moved Permanently`). `config/server.local.json` therefore cannot bind. Workaround used:
+   `ANANSI_PORT=8090 node src/bin/serve.mjs --config config/server.local.json`, and pass
+   `-Endpoint 'http://127.0.0.1:8090/api/v1/exchange'` to the client. The embedded default
+   endpoint (8080) now hits nginx and fails with `CLIENT_REDIRECT_REJECTED` — the correct
+   behaviour, but it means the shipped default does not work on this host without `-Endpoint`
+   or a rebuild with `--endpoint`.
+2. **`client/dist/channelchat-client.ps1` was stale** relative to `client/ChannelChat.Client.ps1`:
+   the inlined transport code still threw `CLIENT_TIMEOUT` for non-timeout connection failures
+   where the source throws `CLIENT_TRANSPORT`. Rebuilt with `node client/build/build-client.mjs`
+   (only that line + its comment changed; dictionary unchanged). `test/staleness.test.mjs`
+   only compares the embedded dictionary, so it did not catch stale inlined code.
+
+**Verification** (PowerShell 7.6.6 / Linux, Node 22.23.3):
+
+- `npm run test:ps` — 51 assertions pass.
+- `npm test` — 84 tests pass (before rebuild); `staleness` + `interop` re-run after rebuild — 9 pass.
+- Live against the server on :8090: `-HealthCheck` → `Ok=True`, `Status=ok`;
+  `-SendText 'hello world'` echoed exactly; dot-sourced Unicode/CRLF/tab/emoji text
+  round-trip exact; `[byte[]](0..255)` round-trip returned 256 identical bytes;
+  `ConvertTo/From-ChannelTokens` offline round-trip OK.
+- Negative: default endpoint (nginx 301) → `CLIENT_REDIRECT_REJECTED`; refused connection
+  (`127.0.0.1:1`) → `CLIENT_TRANSPORT` in ~180 ms (was `CLIENT_TIMEOUT` with the stale dist).
+
+**NOT RUN**: Windows PowerShell 5.1, standard-user on Windows, privileged bind to :80
+(unchanged from Session 1).

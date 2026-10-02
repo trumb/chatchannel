@@ -10,7 +10,7 @@
 
   Embedded dictionaryId : sha256:c086524028b0dd375fb50622076755b293a478009a3c99cc44003b79f1781425
   Default endpoint      : http://127.0.0.1:8080/api/v1/exchange
-  Generated (UTC)       : 2026-10-02T06:20:36.457Z
+  Generated (UTC)       : 2026-10-02T17:17:59.912Z
 
   The embedded package is DATA (dictionary + public config). It is NOT encryption and
   contains no credentials and no executable code.
@@ -579,8 +579,10 @@ function Invoke-ChannelHttp {
         if ($we.Status -eq [System.Net.WebExceptionStatus]::Timeout) {
             throw (New-ChannelError 'CLIENT_TIMEOUT' 'request timed out')
         }
-        # TLS/connection failures (e.g. TrustFailure, SecureChannelFailure) surface here.
-        throw (New-ChannelError 'CLIENT_TIMEOUT' ("transport failure: {0}" -f $we.Status))
+        # TLS/connection failures (e.g. TrustFailure, SecureChannelFailure, ConnectFailure)
+        # surface here. Certificate validation is never bypassed, so an untrusted HTTPS
+        # certificate fails as a transport error rather than succeeding.
+        throw (New-ChannelError 'CLIENT_TRANSPORT' ("transport failure: {0}" -f $we.Status))
     }
 
     try {
@@ -769,7 +771,7 @@ function Test-ChannelEndpoint {
 # ----------------------------------------------------------------------------------------
 # Embedded package (gzip+base64 of the dictionary + public configuration). DATA ONLY.
 # ----------------------------------------------------------------------------------------
-$ChannelEmbeddedPackage = 'H4sIAAAAAAAAA3VWTZMbuQ39L7yu7Gn16Gt0ix0fckhVasvZw27lgGajuzkiCRokpWlt7X/fAqhJOYlzaooEgYeHB1C/G0txcrM5/25GnKD68iWOiVws5myWUtL56WnbHz92H7uP2/OpO3VPkNzTdfuEb3aBOKPZGO+CK1l8WO8wlq8uINXy92zOz13XdRszOlscReD1Syy8fqYqAfr9YWMCvH2CjIfd5wU4m/N237U7Ad4+U0iMOeP4aS0oh93utD+2W39F+9/Hp+fT6dCd2vF/hnxYvIf8B9gLzPg/Afb9rj+dvjf5QZjd9mX33O3U6me0FHPhassPYfyMOVHM+InG9QfXv9IF4zsdmnj3x8YkWD3B+CVaGl2czfk7Aj+8Zoo/zXeXfhqUN7MxiamQJf8LcnYUzXn7x/ecS2UwFnYS/TcDfgKzMQPDlczG2AXYO6njiL7ICdpFDiZ6K0zFbMxMfjIbs1BBbzbGxdGJ3Wv1DuX84jw1Hch2cBfxFumKYUA2G0PZgnwTJDH4VnFAazaGKaBczA6Z5aRAnGWjRjcRB7MxV2cLyd3b4vIFV7MxbwzyWSFeUALdq6+SB7uQKYo7C+wVGDwAzORHAYhBDbwLcpG8u8oXAzKowSuMslEQJE+7gljDvbLsWhrAl0f+CvPqqMUJMGNU7gIwaQx3JRaYCYHFWfZQ8EG3JfWPA8VVHaekMAemeEclxF91J3koLlZhgusgxhlSWpwCKpTgLnkkdUelNC8wzrpYkBXKBN7qgnJipTAAF1Qm1vgmV1xjLhBlBQnsBhJWb+C5ZonbOCG2kuZIPi1OrkTg26JHqU6TbjFc1XmAOamwcgJmugkUF+0iblktmAa9kW9uKg9cunHBXFjFtgCza0WEGJVtW9njTdmhRlOOLiluHFVoAZJHzYtbOOe9xoecNDD4US8y3bTGC9w12msVT6zF16ZX9Fytzjlo3gZE/aIP6lLWBBcB5CJqlko/ea9CVaxlcbkoKPuOekEoy6PwYC8KbEJuhdDQ3tlFtyOWdpkRR63GqKP3jmlZGzktYUZsCvpWwXvVckiYlVyKuWlzZHe/q332qJQu4MR4YlJTqEzakJZCEzgW1DaMOFTfmhhya+rq24J4cEXHh3cpN3TRFWEHEr6pl6xOIa6Kg13LItcQ9OoVvFeB6ijqBdErsbYuzA07I8osgkKa3liVcYLshLBS46jAE4PjJj64QoyyN3uwTUqW8QpZMQZiaFWTXkOo2kFZVfitAhfpsJkhOm3fAXIbAgF4eFAIBRWql2dTO9yLGOY1Ze3ctHK7LEWK8O9RIpeisxdV3t1F2xKYc+vN4gpEpx7swhTa0ruyPDaBhzbvqp9qK47+hnht1SRWehcIoaW9uKzBgvBclNayoBa8jYzZhXZQmG5qmlObiQw5NZJiEzGEpCNQWYRbmwCtu7NlN7Q54h/tNEsEHcFXdVsYG30FowoLfKHGb5Yv2QLX5mLEqO2XKYLO2KnOVed2qQ0axVHfn5Wd1TSpzawrcm5NM0mRlZqyYNA43oMIa1lDbGRSY+YxMcBr5SGKN216aEN0ftco17ENkQDaNBfUzAYdNLm0Rl7akFiqqjW3NmM3z/Kuy+sQI6hqhkprG3cDca8PHrAo/RVL0YekSXcke2nSXPXpag+cdbFhkVGr4vPuUfS8vK9mj6ASqrm9FAyjg0ZuuTnv5qVoS2XxMMJNJ09ru0w+F6em+K26SK2f2YkHoZq4aI9byPbxihIzxsfAfqxwHFfzL1HIggH+z/+Vv43mbPIC/f5wtt3psO93XX8aunF8Pu6nYd8d+r47Ho77/dC/PMPueOq6F3i2Ly/W7nZd9zwcX6bt8bTd9XtJGyMyFBz/Uv5ZrDmbvusPH7bdh67/2h3OfXd+Pnzc7Y+/mh/g+hM/y6vuIgsAAA=='
+$ChannelEmbeddedPackage = 'H4sIAAAAAAAAA3VWwZIbNw79F14je1o90kij29rrQw6pSqWcHJLKAc1Gd3NEEjRIStNK5d9TADUpJ+s9NUWCwMPDA6g/jKU4udmc/jAjTlB9+RTHRC4WczJLKen08LDtD++799377enYHbsHSO7hsn3AV7tAnNFsjHfBlSw+rHcYy2cXkGr5IZvTY9d13caMzhZHEXj9FAuvH6lKgH7/tDEBXj9AxqfdxwU4m9N237U7AV4/UkiMOeP4YS0oh93uuD+0W/9F++/j4+Px+NQd2/E/Q94t3kL+CPYMM/5PgH2/64/Hr02+EWa3fd49dju1+gktxVy42vJNGD9hThQzfqBx/cb1z3TG+EaHJt79uTEJVk8wfoqWRhdnc/qKwHcvmeJ3882l7wblzWxMYipkyf+CnB1Fc9r++TXnUhmMhZ1E/82An8BszMBwIbMxdgH2Tuo4oi9ygnaRg4leC1MxGzOTn8zGLFTQm41xcXRi91K9Qzk/O09NB7Id3Fm8RbpgGJDNxlC2IN8ESQy+VBzQmo1hCigXs0NmOSkQZ9mo0U3EwWzMxdlCcve6uHzG1WzMK4N8VohnlEC36qvkwS5kiuLOAnsFBncAM/lRAGJQA++CXCTvLvLFgAxq8AKjbBQEydOuINZwqyy7lgbw5Z6/wrw4anECzBiVuwBMGsNdiAVmQmBxlj0UvNNtSf3jQHFVxykpzIEp3lAJ8RfdSR6Ki1WY4DqIcYaUFqeACiW4SR5J3VEpzQuMsy4WZIUygbe6oJxYKQzABZWJNb7KFdeYC0RZQQK7gYTVK3iuWeI2ToitpDmST4uTKxH4uuhRqtOkWwwXdR5gTiqsnICZrgLFRbuIW1YLpkFv5Kubyh2XbpwxF1axLcDsWhEhRmXbVvZ4VXao0ZSjS4obRxVagORR8+IWznmv8SEnDQx+1ItMV63xAjeN9lLFE2vxtekVPVercw6atwFRv+iDupQ1wVkAuYiapdJP3qtQFWtZXC4Kyr6hXhDKci882LMCm5BbITS0d3bR7YilXWbEUasx6ui9YVrWRk5LmBGbgr5U8F61HBJmJZdibtoc2d1uap89KqULODGemNQUKpM2pKXQBI4FtQ0jDtW3Jobcmrr6tiAeXNHx4V3KDV10RdiBhK/qJatTiKviYNeyyDUEvXoB71WgOop6QfRCrK0Lc8POiDKLoJCmN1ZlnCA7IazUOCrwxOC4iQ8uEKPszR5sk5JlvEBWjIEYWtWk1xCqdlBWFX6pwEU6bGaITtt3gNyGQAAe7hRCQYXq5dnUDvcihnlNWTs3rdwuS5Ei/D1K5FJ09qzKu7loWwJzbr1ZXIHo1INdmEJbeleW+ybw0OZd9VNtxdHfEC+tmsRK7wIhtLQXlzVYEJ6L0loW1IK3kTG70A4K01VNc2ozkSGnRlJsIoaQdAQqi3BtE6B1d7bshjZH/L2dZomgI/iibgtjo69gVGGBL9T4zfIlW+DSXIwYtf0yRdAZO9W56twutUGjOOr7s7Kzmia1mXVBzq1pJimyUlMWDBrHexBhLWuIjUxqzNwnBnitPETxpk0PbYjObxrlOrYhEkCb5oya2aCDJpfWyEsbEktVtebWZuzmWd51eR1iBFXNUGlt424g7vXBAxalv2Ap+pA06Y5kz02aqz5d7YGzLjYsMmpVfN7di56Xt9XsEVRCNbeXgmF00MgtV+fdvBRtqSweRrjq5Gltl8nn4tQUv1QXqfUzO/EgVBMX7XEL2d5fUWLGeB/Y9xWO42p+F4UsGOD//F/5fjQnkxfo908n2x2f9v2u649DN46Ph/007Lunvu8OT4f9fuifH2F3OHbdMzza52drd7uuexwOz9P2cNzu+r2kjREZCo7/KT8Xa06m7/qnd9vuXdd/3h5O28Np//z+edv/ar6B6y8L6AzfIgsAAA=='
 
 if (-not $NoAutoLoad) {
     $null = Import-ChannelPackage -Base64 $ChannelEmbeddedPackage -SetAsDefault
