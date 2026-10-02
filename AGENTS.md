@@ -23,7 +23,7 @@ node client/build/build-client.mjs   # rebuild the standalone client after any c
   fallback; direct connection (no ambient proxy).
 - **Keep the dictionary and the generated client in sync.** After editing the dictionary or
   client code, run `node client/build/build-client.mjs`; `test/staleness.test.mjs` fails if
-  the embedded dictionary is stale.
+  the embedded dictionary or the inlined client code is stale.
 
 ## Landing the plane (session completion)
 
