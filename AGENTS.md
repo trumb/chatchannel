@@ -35,6 +35,7 @@ When ending a work session:
 3. **Update `ai-status/CURRENT_STATUS.md`** (task table) and append a dated
    `ai-status/SESSION_LOG.md` entry (focus, deliverables, verification, NOT RUN items).
 4. **Record exact versions** actually tested (PowerShell, Windows, .NET, Node).
-5. **Commit** focused, reviewable changes. (No git remote is configured in this repo; do not
-   invent a push target. Deployment to Azure is out of scope.)
+5. **Commit and push** focused, reviewable changes. Always push after committing; the
+   remote is `origin` (`https://github.com/trumb/chatchannel.git`, branch `main`).
+   Deployment to Azure is out of scope.
 6. **Hand off** — leave next steps in `CURRENT_STATUS.md`.
