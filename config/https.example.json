@@ -1,0 +1,9 @@
+{
+  "host": "0.0.0.0",
+  "port": 8443,
+  "dictionaryPath": "data/dictionary.v1.json",
+  "tls": {
+    "certFile": "config/tls/server.crt",
+    "keyFile": "config/tls/server.key"
+  }
+}

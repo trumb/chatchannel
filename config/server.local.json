@@ -1,0 +1,6 @@
+{
+  "host": "127.0.0.1",
+  "port": 8080,
+  "dictionaryPath": "data/dictionary.v1.json",
+  "tls": null
+}

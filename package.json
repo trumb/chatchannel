@@ -1,0 +1,20 @@
+{
+  "name": "channelchat-anansi",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ChannelChat (codename Anansi): reversible dictionary codec + HTTP exchange server with a dependency-free Windows PowerShell client.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "gen:dictionary": "node tools/gen-dictionary.mjs",
+    "build:client": "node client/build/build-client.mjs",
+    "start": "node src/bin/serve.mjs --config config/server.local.json",
+    "start:azure": "node src/bin/serve.mjs --config config/server.azure.json",
+    "start:https": "node src/bin/serve.mjs --config config/https.example.json",
+    "test": "node --test",
+    "test:interop": "node --test test/interop.test.mjs",
+    "test:ps": "pwsh -NoProfile -File test/pwsh/run-tests.ps1"
+  }
+}

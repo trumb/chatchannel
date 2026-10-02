@@ -1,0 +1,13 @@
+# dependencies (none expected; keep the tree clean)
+node_modules/
+
+# logs and scratch
+*.log
+/tmp/
+.DS_Store
+
+# local TLS material (never commit private keys/certs)
+config/tls/
+*.pem
+*.key
+*.crt
