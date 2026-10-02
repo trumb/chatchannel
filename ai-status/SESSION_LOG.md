@@ -84,3 +84,16 @@ documented form (one-shot, dot-sourced, text, bytes, offline codec, negative pat
 
 **NOT RUN**: Windows PowerShell 5.1, standard-user on Windows, privileged bind to :80
 (unchanged from Session 1).
+
+## Session 3 — 2026-10-02 — Staleness test covers inlined client code
+
+**Focus**: Close the gap found in Session 2: `test/staleness.test.mjs` compared only the
+embedded dictionary, so a dist with stale inlined PowerShell code passed.
+
+**Deliverable**: Two new tests assert the dist contains `client/ChannelChat.Core.ps1` and
+`client/ChannelChat.Client.ps1` verbatim (the build inlines them unchanged).
+
+**Verification** (Node 22.23.3): RED confirmed against the Session 1 dist (`git show
+390ee8b:client/dist/channelchat-client.ps1`) — the Client.ps1 test fails, dictionary and
+Core.ps1 tests pass, matching the actual drift. GREEN against the current dist. `npm test`
+— 86 tests pass.

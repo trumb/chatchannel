@@ -32,3 +32,31 @@ test("standalone client's embedded dictionary is not stale", () => {
   assert.equal(embeddedPkg.dictionaryId, fresh.dictionaryId, "embedded dictionaryId is stale — rebuild the client");
   assert.deepEqual(embeddedPkg.dictionary.entries, fresh.entries, "embedded dictionary entries are stale — rebuild the client");
 });
+
+// The build inlines the two client source files verbatim between banner comments. If either
+// source changes without a rebuild, the dist carries old code (this happened once: a stale
+// CLIENT_TIMEOUT where the source said CLIENT_TRANSPORT) while the dictionary check above
+// still passes.
+function readDist() {
+  try {
+    return readFileSync(distPath, "utf8");
+  } catch {
+    assert.fail("client/dist/channelchat-client.ps1 is missing; run: node client/build/build-client.mjs");
+  }
+}
+
+function readClientSource(name) {
+  return readFileSync(new URL(`../client/${name}`, import.meta.url).pathname, "utf8");
+}
+
+test("standalone client's inlined ChannelChat.Core.ps1 is not stale", () => {
+  const dist = readDist();
+  const core = readClientSource("ChannelChat.Core.ps1");
+  assert.ok(dist.includes(core), "inlined ChannelChat.Core.ps1 differs from client/ChannelChat.Core.ps1 — rebuild the client");
+});
+
+test("standalone client's inlined ChannelChat.Client.ps1 is not stale", () => {
+  const dist = readDist();
+  const client = readClientSource("ChannelChat.Client.ps1");
+  assert.ok(dist.includes(client), "inlined ChannelChat.Client.ps1 differs from client/ChannelChat.Client.ps1 — rebuild the client");
+});

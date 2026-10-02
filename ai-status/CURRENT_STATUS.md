@@ -19,7 +19,7 @@ automated tests. Implemented and tested locally only; no Azure deployment perfor
 | Optional HTTPS | Done | `config/https.example.json`, `ANANSI_TLS_*`; validation never bypassed |
 | PowerShell public API | Done | `ConvertTo/From-ChannelTokens`, `Send-ChannelMessage`, `Test-ChannelEndpoint` |
 | Embedded package + standalone client build | Done | `client/build/build-client.mjs` → `client/dist/channelchat-client.ps1` |
-| Staleness test for embedded dictionary | Done | `test/staleness.test.mjs` — checks the embedded dictionary only, NOT the inlined client code (dist drifted once; see Session 2) |
+| Staleness test for standalone client | Done | `test/staleness.test.mjs` — embedded dictionary + verbatim inlined `ChannelChat.Core.ps1` / `ChannelChat.Client.ps1` |
 | Node tests (unit/integration/https/interop) | Done | `node --test` — all pass |
 | PowerShell dependency-free harness | Done | `test/pwsh/run-tests.ps1` — all pass |
 | Docs (README, PROTOCOL, SECURITY) | Done | plus Azure notes + Windows verification in README |
@@ -46,8 +46,5 @@ automated tests. Implemented and tested locally only; no Azure deployment perfor
 2. Arrange the server-side privilege to bind :80 on the Azure VM (or place behind the
    existing reverse proxy) — operator task; no deployment in scope here.
 3. Replace the echo with real application behavior when the business logic is defined.
-4. Extend `test/staleness.test.mjs` to also compare the inlined `ChannelChat.Core.ps1` /
-   `ChannelChat.Client.ps1` sections of the dist against the sources (the dictionary check
-   alone missed a stale error code in Session 2).
-5. Consider an authentication layer as a separate concern if/when required (kept out of the
+4. Consider an authentication layer as a separate concern if/when required (kept out of the
    MVP by design).
